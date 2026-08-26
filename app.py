@@ -2,9 +2,9 @@
 STREAMLIT UI - the only file meant to be run directly by a human.
 Wraps detect -> diagnose -> confidence -> narrate into one clickable app.
 
-Design goal: make the LLM-vs-non-LLM split VISIBLE, not just true in the code.
+Design goal: make the LLM-vs-non-LLM split explicitly.
 Every section is tagged so a judge can see exactly which step used AI and
-which step was pure math/SQL, per the brief's explicit ask for this.
+which step was pure math/SQL, per the brief's ask for this.
 """
 import sys
 import os
