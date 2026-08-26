@@ -14,7 +14,7 @@ import pandas as pd
 import os
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-_PROJECT_ROOT = os.path.dirname(_THIS_DIR)  # src/ -> project root
+_PROJECT_ROOT = _THIS_DIR  # src/ -> project root
 
 CONTRACT_PATH = os.path.join(_PROJECT_ROOT, "Semantic_Contract.xlsx")
 
