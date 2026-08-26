@@ -37,7 +37,7 @@ SOURCE_FILE_MAP = {
 
 def load_kpi_definitions():
     """Returns a list of dicts, one per KPI, read straight from the Excel."""
-    df = pd.read_excel(CONTRACT_PATH="Semantic_Contract.xlsx", sheet_name="KPI Definitions")
+    df = pd.read_excel(CONTRACT_PATH, sheet_name="KPI Definitions")
     kpis = []
     for _, row in df.iterrows():
         name = row["KPI Name"]
@@ -58,7 +58,7 @@ def load_kpi_definitions():
 
 def load_access_rules():
     """Returns a list of dicts, one per persona, read straight from the Excel."""
-    df = pd.read_excel(CONTRACT_PATH="Semantic_Contract.xlsx", sheet_name="Access")
+    df = pd.read_excel(CONTRACT_PATH, sheet_name="Access")
     personas = []
     for _, row in df.iterrows():
         personas.append({
@@ -71,7 +71,7 @@ def load_access_rules():
 
 
 def load_source_notes():
-    df = pd.read_excel(CONTRACT_PATH="Semantic_Contract.xlsx", sheet_name="Data Source Notes")
+    df = pd.read_excel(CONTRACT_PATH, sheet_name="Data Source Notes")
     return df.to_dict("records")
 
 
