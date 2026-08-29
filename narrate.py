@@ -132,15 +132,13 @@ def _parse_llm_json(raw_text: str):
 
 
 def _mock_structured_response(kpi_name, region, diag_df):
-    """Used only in dry-run mode (no API key) so the full UI - including the
-    structured actions table - can still be demoed end-to-end without cost."""
     top = diag_df.iloc[0]
     top2 = diag_df.iloc[1] if len(diag_df) > 1 else top
     narrative = (
-        f"[DRY RUN - no ANTHROPIC_API_KEY set] {kpi_name} in {region} moved outside its normal range. "
+        f"[DRY RUN - no Gemini_API_KEY set] {kpi_name} in {region} moved outside its normal range. "
         f"The top correlated signal is '{top['candidate_driver'].replace('_',' ')}' "
         f"(correlation={top['historical_correlation']}, this-month z={top['moved_this_month_zscore']}). "
-        f"Set ANTHROPIC_API_KEY to get a real, live-generated explanation here instead of this placeholder."
+        f"Set Gemini_API_KEY to get a real, live-generated explanation here instead of this placeholder."
     )
     actions = [
         {
@@ -226,7 +224,7 @@ def generate_narrative(kpi_name: str, region: str, persona_role: str, dry_run: b
     if row["status"] == "normal":
         return {"status": "normal", "message": f"{kpi_name} in {region} is within normal range (z={row['z_score']}). No explanation needed."}
 
-    # 4. DIAGNOSIS - rank candidate drivers (still no LLM)
+    # 4. DIAGNOSIS - rank candidate drivers
     kpi_def = next(k for k in kpis if k["name"] == kpi_name)
     source_map = {"Regional Revenue": ("monthly_finance.csv", "revenue_usd", lambda df: df[df.product_line == "Core"])}
     src_file, val_col, filt = source_map.get(kpi_name, (kpi_def["source_file"], None, None))
@@ -235,26 +233,20 @@ def generate_narrative(kpi_name: str, region: str, persona_role: str, dry_run: b
     persona = next(p for p in personas if p["role"] == persona_role)
     system_prompt, user_prompt = build_prompt(kpi_name, region, row, diag, persona)
 
-    # 5. LLM CALL - the ONLY step that touches an LLM in this whole pipeline
+    # 5. LLM CALL - the only step that uses an LLM
     t0 = time.time()
-    if dry_run or not os.environ.get("ANTHROPIC_API_KEY"):
-        # Dry-run mode: lets us test/demo the full pipeline - including the
-        # structured actions table - without a live API key.
+    if dry_run or not os.environ.get("GEMINI_API_KEY"):
+        # Dry-run mode: lets us test/demo the full pipeline - including the structured actions table - without a live API key.
         narrative_text, actions = _mock_structured_response(kpi_name, region, diag)
         usage = {"input_tokens": len(system_prompt.split()) + len(user_prompt.split()), "output_tokens": 0}
     else:
-        import anthropic
-        client = anthropic.Anthropic()
-        resp = client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=500,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_prompt}],
-        )
-        raw_text = "".join(b.text for b in resp.content if b.type == "text")
-        narrative_text, actions = _parse_llm_json(raw_text)
-        usage = {"input_tokens": resp.usage.input_tokens, "output_tokens": resp.usage.output_tokens}
-    latency_ms = round((time.time() - t0) * 1000, 1)
+      from google import genai
+      client = genai.Client()
+      resp = client.models.generate_content(model="gemini-3.7-flash", contents=user_prompt, config={"system_instruction": system_prompt,"max_output_tokens": 500,},)
+      raw_text = resp.text
+      narrative_text, actions = _parse_llm_json(raw_text)
+      
+      usage = {"input_tokens": resp.usage_metadata.prompt_token_count,"output_tokens": resp.usage_metadata.candidates_token_count,}
 
     est_cost = round(
         usage["input_tokens"] / 1_000_000 * PRICE_PER_1M_INPUT +
