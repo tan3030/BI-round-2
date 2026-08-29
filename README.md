@@ -2,7 +2,7 @@
 **Team Mars - Accenture Innovation Challenge 2026, Round 2 Prototype**
 Problem Statement: BusinessIntelligence.ai
 
-🔗 **Live demo:** [add your Streamlit Cloud link here after deploying]
+🔗 **Live demo:** [[Streamlit app link](https://uzgbzzs3m8hbqbh9nrcdmn.streamlit.app/)]
 🎥 **Demo video:** [add your video link here]
 
 
