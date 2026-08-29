@@ -4,7 +4,7 @@ Wraps detect -> diagnose -> confidence -> narrate into one clickable app.
 
 Design goal: make the LLM-vs-non-LLM split explicitly.
 Every section is tagged so a judge can see exactly which step used AI and
-which step was pure math/SQL, per the brief's ask for this.
+which step was pure math/SQL as asked.
 """
 import sys
 import os
@@ -64,16 +64,16 @@ else:
 
 run = st.sidebar.button("Run engine", type="primary")
 
-api_key_present = bool(os.environ.get("ANTHROPIC_API_KEY"))
+api_key_present = bool(os.environ.get("GEMINI_API_KEY"))
 if not api_key_present:
-    st.sidebar.warning("No ANTHROPIC_API_KEY set — narrative step will run in DRY RUN mode (shows the prompt, doesn't call the LLM).")
+    st.sidebar.warning("No GEMINI_API_KEY set - narrative step will run in DRY RUN mode (shows the prompt, doesn't call the LLM).")
 
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 if run:
     st.divider()
-    st.subheader(f"Query: {sel_persona} — {sel_kpi} — {sel_region}")
+    st.subheader(f"Query: {sel_persona} - {sel_kpi} - {sel_region}")
 
     # ---- Special path: contradiction scenario ----
     if sel_kpi == "__contradiction__":
