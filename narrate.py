@@ -241,22 +241,17 @@ def generate_narrative(kpi_name: str, region: str, persona_role: str, dry_run: b
         usage = {"input_tokens": len(system_prompt.split()) + len(user_prompt.split()), "output_tokens": 0}
     else:
       from google import genai
-import os
-
-client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-
-resp = client.models.generate_content(
-    model="gemini-3.7-flash",
-    contents=user_prompt,
-    config={
+      import os
+      client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+      resp = client.models.generate_content(model="gemini-3.7-flash",contents=user_prompt,config={
         "system_instruction": system_prompt,
         "max_output_tokens": 500,
     },
 )
 
-raw_text = resp.text
-narrative_text, actions = _parse_llm_json(raw_text)
-usage = {
+    raw_text = resp.text
+    narrative_text, actions = _parse_llm_json(raw_text)
+    usage = {
     "input_tokens": resp.usage_metadata.prompt_token_count,
     "output_tokens": resp.usage_metadata.candidates_token_count,
 }
