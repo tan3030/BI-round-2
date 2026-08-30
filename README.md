@@ -3,7 +3,6 @@
 Problem Statement: BusinessIntelligence.ai
 
 🔗 **Live demo:** [[Streamlit app link](https://uzgbzzs3m8hbqbh9nrcdmn.streamlit.app/)]
-🎥 **Demo video:** [add your video link here]
 
 
 ## What this is: 
